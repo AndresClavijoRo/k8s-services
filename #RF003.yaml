@@ -1,0 +1,95 @@
+#RF003
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rf003
+  labels:
+    app: rf003
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rf003
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rf003
+    spec:
+      containers:
+        - name: rf003
+          image: us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/rf003:v1.0.0
+          ports:
+            - containerPort: 3005
+          env:
+            - name: "DB_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: DB_USER
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: DB_PASSWORD
+            - name: "DB_HOST"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: DB_HOST
+            - name: "DB_PORT"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: DB_PORT
+            - name: "DB_NAME"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: DB_NAME
+            - name: "USERS_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: USERS_PATH        
+          # Realizar pull siempre a la imagen
+          imagePullPolicy: Always
+      volumes:
+        - name: appsecrets-volume
+          secret:
+            secretName: appsecrets
+---            
+#--- HEALTHCHECK RF003
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: rf003-config
+spec:
+  healthCheck:
+    checkIntervalSec: 60
+    port: 3005
+    type: HTTP
+    requestPath: /rf003/ping
+---
+#--- SERVICE RF003
+kind: Service
+apiVersion: v1
+metadata:
+  name: servicio-rf003
+  annotations:
+    cloud.google.com/backend-config: '{"default": "rf003-config"}'  
+spec:
+  type: NodePort
+  selector:
+    app: rf003
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3005
+      nodePort: 31024
+#--- RF003
+---

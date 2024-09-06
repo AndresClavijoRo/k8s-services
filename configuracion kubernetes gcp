@@ -1,0 +1,60 @@
+gcloud init
+gcloud config get-value project
+gcloud config set project deliveryandlogistic
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/users:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/users:v1.0.0
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/routes:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/routes:v1.0.0
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/posts:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/posts:v1.0.0
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/offers:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/offers:v1.0.0
+
+/*REDES*/
+
+gcloud compute networks create vpn-deliveryandlogistic --project=deliveryandlogistic --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+/*
+Instances on this network will not be reachable until firewall rules
+are created. As an example, you can allow all internal traffic between
+instances as well as SSH, RDP, and ICMP by running:
+
+$ gcloud compute firewall-rules create <FIREWALL_NAME> --network vpn-deliveryandlogistic --allow tcp,udp,icmp --source-ranges <IP_RANGE>
+$ gcloud compute firewall-rules create <FIREWALL_NAME> --network vpn-deliveryandlogistic --allow tcp:22,tcp:3389,icmp
+*/
+
+gcloud compute networks subnets create appnet --range=192.168.32.0/21 --network=vpn-deliveryandlogistic --region=us-central1 --project=deliveryandlogistic &
+gcloud compute networks subnets create usernet --range=192.168.40.0/21 --network=vpn-deliveryandlogistic --region=us-central1 --project=deliveryandlogistic &
+gcloud compute networks subnets create postnet --range=192.168.48.0/21 --network=vpn-deliveryandlogistic --region=us-central1 --project=deliveryandlogistic &
+gcloud compute networks subnets create offernet --range=192.168.56.0/21 --network=vpn-deliveryandlogistic --region=us-central1 --project=deliveryandlogistic &
+gcloud compute networks subnets create routenet --range=192.168.64.0/21 --network=vpn-deliveryandlogistic --region=us-central1 --project=deliveryandlogistic
+
+gcloud compute addresses create dbnet --global --purpose=VPC_PEERING --addresses=192.168.72.0 --prefix-length=21 --network=vpn-deliveryandlogistic --project=deliveryandlogistic
+
+gcloud services vpc-peerings connect --service=servicenetworking.googleapis.com --ranges=dbnet --network=vpn-deliveryandlogistic --project=deliveryandlogistic
+
+gcloud compute firewall-rules create allow-db-ingress --direction=INGRESS --priority=1000 --network=vpn-deliveryandlogistic --action=ALLOW --rules=tcp:5432 --source-ranges=192.168.40.0/21,192.168.48.0/21,192.168.56.0/21,192.168.64.0/21 --target-tags=basesdedatos --project=deliveryandlogistic
+
+
+/*CREAR CLUSTER*/
+gcloud beta container --project "deliveryandlogistic" clusters create-auto "deliveryandlogistics-cluster" --region "us-central1" --release-channel "regular" --network "projects/deliveryandlogistic/global/networks/vpn-deliveryandlogistic" --subnetwork "projects/deliveryandlogistic/regions/us-central1/subnetworks/appnet" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED
+
+gcloud components install gke-gcloud-auth-plugin 
+gcloud container clusters get-credentials deliveryandlogistics-cluster  --region us-central1 --project deliveryandlogistic
+
+/*APLICAR SECRETOS*/
+kubectl apply -f secrets.yaml
+
+/*APLICAR ORQUESTACION*/
+kubectl apply -f k8s-deployment.yml
+
+
+
+user@192 ~ % kubectl describe pod <nombre del pod>
+user@192 ~ % kubectl logs <nombre del pod> --all-containers
+user@192 ~ % kubectl get events
