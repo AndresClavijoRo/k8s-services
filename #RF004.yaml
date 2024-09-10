@@ -26,36 +26,31 @@ spec:
           ports:
             - containerPort: 3006
           env:
-            - name: "DB_USER"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets 
-                  key: DB_USER
-            - name: "DB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets 
-                  key: DB_PASSWORD
-            - name: "DB_HOST"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets 
-                  key: DB_HOST
-            - name: "DB_PORT"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets 
-                  key: DB_PORT
-            - name: "DB_NAME"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets 
-                  key: DB_NAME
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets 
-                  key: USERS_PATH        
+                  key: USERS_PATH
+            - name: "SCORES_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: SCORES_PATH
+            - name: "POSTS_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: POSTS_PATH
+            - name: "OFFERS_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: OFFERS_PATH
+            - name: "ROUTES_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets 
+                  key: ROUTES_PATH      
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
@@ -73,7 +68,7 @@ spec:
     checkIntervalSec: 60
     port: 3006
     type: HTTP
-    requestPath: /rf004/ping
+    requestPath: /rf004/posts/ping
 ---
 #--- SERVICE RF004
 kind: Service

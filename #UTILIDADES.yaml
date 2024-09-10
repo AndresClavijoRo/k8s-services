@@ -71,7 +71,7 @@ metadata:
 spec:
   healthCheck:
     checkIntervalSec: 60
-    port: 3001
+    port: 3004
     type: HTTP
     requestPath: /utilidades/ping
 ---
