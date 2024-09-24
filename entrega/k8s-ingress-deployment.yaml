@@ -67,3 +67,10 @@ spec:
             name: servicio-rf005
             port: 
               number: 80
+      - pathType: Prefix
+        path: /native
+        backend:
+          service:
+            name: servicio-native
+            port: 
+              number: 80

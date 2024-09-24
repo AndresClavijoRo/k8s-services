@@ -58,3 +58,9 @@ kubectl apply -f k8s-deployment.yml
 user@192 ~ % kubectl describe pod <nombre del pod>
 user@192 ~ % kubectl logs <nombre del pod> --all-containers
 user@192 ~ % kubectl get events
+
+
+/*entrega 3*/
+
+docker tag ghcr.io/misw-4301-desarrollo-apps-en-la-nube/true-native:2.0.0 us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/true-native:2.0.0
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/true-native:2.0.0
