@@ -38,40 +38,40 @@ spec:
             - name: "DB_USER"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_USER
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_PASSWORD
             - name: "DB_HOST"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_HOST
             - name: "DB_PORT"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_PORT
             - name: "DB_NAME"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_NAME
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
-                  key: USERS_PATH        
+                  name: appsecrets
+                  key: USERS_PATH
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
         - name: appsecrets-volume
           secret:
             secretName: appsecrets
----            
+---
 #--- HEALTHCHECK UTILIDADES
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -90,7 +90,7 @@ apiVersion: v1
 metadata:
   name: servicio-utilidades
   annotations:
-    cloud.google.com/backend-config: '{"default": "utilidades-config"}'  
+    cloud.google.com/backend-config: '{"default": "utilidades-config"}'
 spec:
   type: NodePort
   selector:
@@ -142,20 +142,20 @@ spec:
             - name: "POSTS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: POSTS_PATH
             - name: "ROUTES_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
-                  key: ROUTES_PATH      
+                  name: appsecrets
+                  key: ROUTES_PATH
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
         - name: appsecrets-volume
           secret:
             secretName: appsecrets
----            
+---
 #--- HEALTHCHECK RF003
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -174,7 +174,7 @@ apiVersion: v1
 metadata:
   name: servicio-rf003
   annotations:
-    cloud.google.com/backend-config: '{"default": "rf003-config"}'  
+    cloud.google.com/backend-config: '{"default": "rf003-config"}'
 spec:
   type: NodePort
   selector:
@@ -226,35 +226,35 @@ spec:
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: USERS_PATH
             - name: "SCORES_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: SCORES_PATH
             - name: "POSTS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: POSTS_PATH
             - name: "OFFERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: OFFERS_PATH
             - name: "ROUTES_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
-                  key: ROUTES_PATH      
+                  name: appsecrets
+                  key: ROUTES_PATH
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
         - name: appsecrets-volume
           secret:
             secretName: appsecrets
----            
+---
 #--- HEALTHCHECK RF004
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -273,7 +273,7 @@ apiVersion: v1
 metadata:
   name: servicio-rf004
   annotations:
-    cloud.google.com/backend-config: '{"default": "rf004-config"}'  
+    cloud.google.com/backend-config: '{"default": "rf004-config"}'
 spec:
   type: NodePort
   selector:
@@ -325,35 +325,35 @@ spec:
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: USERS_PATH
             - name: "SCORES_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: SCORES_PATH
             - name: "POSTS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: POSTS_PATH
             - name: "OFFERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: OFFERS_PATH
             - name: "ROUTES_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
-                  key: ROUTES_PATH     
+                  name: appsecrets
+                  key: ROUTES_PATH
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
         - name: appsecrets-volume
           secret:
             secretName: appsecrets
----            
+---
 #--- HEALTHCHECK RF005
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -372,7 +372,7 @@ apiVersion: v1
 metadata:
   name: servicio-rf005
   annotations:
-    cloud.google.com/backend-config: '{"default": "rf005-config"}'  
+    cloud.google.com/backend-config: '{"default": "rf005-config"}'
 spec:
   type: NodePort
   selector:
@@ -383,3 +383,129 @@ spec:
       targetPort: 3007
       nodePort: 31026
 #--- RF005
+---
+###################################
+#CREDIT-CARDS
+###################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-cards
+  labels:
+    app: credit-cards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: credit-cards
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: credit-cards
+    spec:
+      containers:
+        - name: credit-cards
+          image: us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/credit-cards:v1.0.0
+          ports:
+            - containerPort: 3020
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: "DB_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: DB_USER
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: DB_PASSWORD
+            - name: "DB_HOST"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: DB_HOST
+            - name: "DB_PORT"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: DB_PORT
+            - name: "DB_NAME"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: DB_NAME
+            - name: "USERS_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: USERS_PATH
+            - name: "TRUE_NATIVE_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: TRUE_NATIVE_PATH
+            - name: "CLOUD_PROJECT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: CLOUD_PROJECT_ID
+            - name: "VALIDATE_CREDIT_CARD"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: VALIDATE_CREDIT_CARD
+            - name: "SECRET_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: SECRET_TOKEN
+          # Realizar pull siempre a la imagen
+          imagePullPolicy: Always
+      volumes:
+        - name: appsecrets-volume
+          secret:
+            secretName: appsecrets
+---
+#--- HEALTHCHECK CREDIT-CARDS
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: credit-cards-config
+spec:
+  healthCheck:
+    checkIntervalSec: 60
+    port: 3020
+    type: HTTP
+    requestPath: /credit-cards/ping
+---
+#--- SERVICE CREDIT-CARDS
+kind: Service
+apiVersion: v1
+metadata:
+  name: servicio-credit-cards
+  annotations:
+    cloud.google.com/backend-config: '{"default": "credit-cards-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: credit-cards
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3020
+      nodePort: 31028
+#--- CREDIT-CARDS
+---
+

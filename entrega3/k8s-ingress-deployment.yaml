@@ -1,0 +1,34 @@
+###################################
+# INGRESS
+###################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  labels:
+    name: gateway-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /users
+            backend:
+              service:
+                name: servicio-users
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /native
+            backend:
+              service:
+                name: servicio-native
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /credit-cards
+            backend:
+              service:
+                name: servicio-credit-cards
+                port:
+                  number: 80

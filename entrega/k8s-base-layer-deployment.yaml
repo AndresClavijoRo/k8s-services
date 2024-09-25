@@ -63,8 +63,33 @@ spec:
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
-                  key: USERS_PATH        
+                  name: appsecrets
+                  key: USERS_PATH
+            - name: "SECRET_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: SECRET_TOKEN
+            - name: "CLOUD_PROJECT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: CLOUD_PROJECT_ID
+            - name: "TOPIC_NEW_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: TOPIC_NEW_USER
+            - name: "TOPIC_SEND_EMAIL"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: TOPIC_SEND_EMAIL
+            - name: "TRUE_NATIVE_PATH"
+              valueFrom:
+                secretKeyRef:
+                  name: appsecrets
+                  key: TRUE_NATIVE_PATH   
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:

@@ -42,7 +42,19 @@ gcloud compute firewall-rules create allow-db-ingress --direction=INGRESS --prio
 
 
 /*CREAR CLUSTER*/
-gcloud beta container --project "deliveryandlogistic" clusters create-auto "deliveryandlogistics-cluster" --region "us-central1" --release-channel "regular" --network "projects/deliveryandlogistic/global/networks/vpn-deliveryandlogistic" --subnetwork "projects/deliveryandlogistic/regions/us-central1/subnetworks/appnet" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED
+gcloud beta container --project "deliveryandlogistic" clusters create-auto "deliveryandlogistics-cluster" --region "us-central1" --release-channel "regular" --network "projects/deliveryandlogistic/global/networks/vpn-deliveryandlogistic" --subnetwork "projects/deliveryandlogistic/regions/us-central1/subnetworks/appnet" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/pubsub
+
+/*el mismo comando pero organizado*/
+gcloud beta container --project "deliveryandlogistic" clusters create-auto "deliveryandlogistics-cluster" `
+  --region "us-central1" `
+  --release-channel "regular" `
+  --network "projects/deliveryandlogistic/global/networks/vpn-deliveryandlogistic" `
+  --subnetwork "projects/deliveryandlogistic/regions/us-central1/subnetworks/appnet" `
+  --cluster-ipv4-cidr "/17" `
+  --binauthz-evaluation-mode=DISABLED `
+  --service-account deliverylogistics-cluster@deliveryandlogistic.iam.gserviceaccount.com `
+  --scopes "https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/pubsub"
+
 
 gcloud components install gke-gcloud-auth-plugin 
 gcloud container clusters get-credentials deliveryandlogistics-cluster  --region us-central1 --project deliveryandlogistic
@@ -64,3 +76,11 @@ user@192 ~ % kubectl get events
 
 docker tag ghcr.io/misw-4301-desarrollo-apps-en-la-nube/true-native:2.0.0 us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/true-native:2.0.0
 docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/true-native:2.0.0
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/users:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/users:v1.0.0
+
+docker build -t us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/credit-cards:v1.0.0 .
+docker push us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/credit-cards:v1.0.0
+
+ kubectl apply -f .\entrega

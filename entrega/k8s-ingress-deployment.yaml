@@ -74,3 +74,10 @@ spec:
             name: servicio-native
             port: 
               number: 80
+      - pathType: Prefix
+        path: /credit-cards
+        backend:
+          service:
+            name: servicio-credit-cards
+            port: 
+              number: 80

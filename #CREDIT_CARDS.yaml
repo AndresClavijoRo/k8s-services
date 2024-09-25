@@ -1,17 +1,17 @@
 ###################################
-# USERS
-###################################  
+#CREDIT-CARDS
+###################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: users
+  name: credit-cards
   labels:
-    app: users
+    app: credit-cards
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: users
+      app: credit-cards
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -20,13 +20,13 @@ spec:
   template:
     metadata:
       labels:
-        app: users
+        app: credit-cards
     spec:
       containers:
-        - name: users
-          image: us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/users:v1.0.0
+        - name: credit-cards
+          image: us-central1-docker.pkg.dev/deliveryandlogistic/deliveryandlogistic-images/credit-cards:v1.0.0
           ports:
-            - containerPort: 3000
+            - containerPort: 3020
           resources:
             requests:
               memory: "64Mi"
@@ -38,92 +38,88 @@ spec:
             - name: "DB_USER"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_USER
             - name: "DB_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_PASSWORD
             - name: "DB_HOST"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_HOST
             - name: "DB_PORT"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_PORT
             - name: "DB_NAME"
               valueFrom:
                 secretKeyRef:
-                  name: appsecrets 
+                  name: appsecrets
                   key: DB_NAME
             - name: "USERS_PATH"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets
                   key: USERS_PATH
-            - name: "SECRET_TOKEN"
+            - name: "TRUE_NATIVE_PATH"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets
-                  key: SECRET_TOKEN
+                  key: TRUE_NATIVE_PATH
             - name: "CLOUD_PROJECT_ID"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets
                   key: CLOUD_PROJECT_ID
-            - name: "TOPIC_NEW_USER"
+            - name: "VALIDATE_CREDIT_CARD"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets
-                  key: TOPIC_NEW_USER
-            - name: "TOPIC_SEND_EMAIL"
+                  key: VALIDATE_CREDIT_CARD
+            - name: "SECRET_TOKEN"
               valueFrom:
                 secretKeyRef:
                   name: appsecrets
-                  key: TOPIC_SEND_EMAIL
-            - name: "TRUE_NATIVE_PATH"
-              valueFrom:
-                secretKeyRef:
-                  name: appsecrets
-                  key: TRUE_NATIVE_PATH   
+                  key: SECRET_TOKEN
           # Realizar pull siempre a la imagen
           imagePullPolicy: Always
       volumes:
         - name: appsecrets-volume
           secret:
-            secretName: appsecrets   
----         
-# HEALTHCHECK users
+            secretName: appsecrets
+---
+#--- HEALTHCHECK CREDIT-CARDS
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: users-config
+  name: credit-cards-config
 spec:
   healthCheck:
     checkIntervalSec: 60
-    port: 3000
+    port: 3020
     type: HTTP
-    requestPath: /users/ping
+    requestPath: /credit-cards/ping
 ---
-#--- SERVICE users
+#--- SERVICE CREDIT-CARDS
 kind: Service
 apiVersion: v1
 metadata:
-  name: servicio-users
+  name: servicio-credit-cards
   annotations:
-    cloud.google.com/backend-config: '{"default": "users-config"}'  
+    cloud.google.com/backend-config: '{"default": "credit-cards-config"}'
 spec:
   type: NodePort
   selector:
-    app: users
+    app: credit-cards
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
-      nodePort: 31019
-#--- USERS
+      targetPort: 3020
+      nodePort: 31028
+#--- CREDIT-CARDS
 ---
+
